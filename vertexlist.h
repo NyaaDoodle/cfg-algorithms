@@ -1,5 +1,5 @@
 #pragma once
-#include <stddef.h>
+#include <stdbool.h>
 
 typedef unsigned int Vertex;
 
@@ -12,15 +12,10 @@ typedef struct _VertexLinkedList {
     VertexLinkedNode* head;
 } VertexLinkedList;
 
-typedef struct _Graph {
-    size_t vertex_count;
-    VertexLinkedList* adjlists;
-} Graph;
-
-Graph* create_graph(size_t vertex_count);
-void insert_edge(Vertex source_vertex, Vertex destination_vertex, Graph* graph);
 void add_node_to_head(Vertex vertex_to_add, VertexLinkedList* list);
-void delete_graph(Graph* graph);
+bool is_node_exists(Vertex query_vertex, VertexLinkedList* list);
+void remove_node(Vertex vertex_to_delete, VertexLinkedList* list);
 void delete_list(VertexLinkedList* list);
-void print_graph(Graph* graph);
 void print_list(VertexLinkedList* list);
+void union_lists(VertexLinkedList* list1, VertexLinkedList* list2);
+void intersect_lists(VertexLinkedList* list1, VertexLinkedList* list2);

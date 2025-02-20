@@ -1,9 +1,9 @@
 CC=gcc
 CFLAGS=-Wall -std=c99
-PROGNAME=cfg
+PROGNAME=cfg_algo
 
-make: main.c graph.c
-	$(CC) main.c graph.c $(CFLAGS) -o $(PROGNAME)
+make: main.c vertexlist.c cfg.c
+	$(CC) main.c vertexlist.c cfg.c $(CFLAGS) -o $(PROGNAME)
 
 clean:
 	rm $(PROGNAME)
