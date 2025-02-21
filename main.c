@@ -1,4 +1,4 @@
-#include "cfg.h"
+#include "algorithms.h"
 
 int main() {
     return 0;
