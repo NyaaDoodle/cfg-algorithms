@@ -47,9 +47,19 @@ bool VertexSet::is_vertex_unset(Vertex query_vertex) const {
 	return false;
 }
 
+unsigned int VertexSet::count_set_vertices() const {
+	unsigned int set_vertices_counter = 0;
+	for (Vertex i = 0; i < this->vertex_count; ++i) {
+		if (this->is_vertex_set(i)) {
+			++set_vertices_counter;
+		}
+	}
+	return set_vertices_counter;
+}
+
 void VertexSet::print() const {
 	std::cout << "{";
-	for (unsigned int i = 0; i < this->vertex_count; ++i) {
+	for (Vertex i = 0; i < this->vertex_count; ++i) {
 		if (this->boolarray[i] == true) {
 			std::cout << i << ' ';
 		}
@@ -95,7 +105,7 @@ VertexSet VertexSet::intersection_set(const VertexSet& vs1, const VertexSet& vs2
 
 bool VertexSet::is_vertex_sets_equal(const VertexSet& vs1, const VertexSet& vs2) {
 	if (is_vertex_sets_same_length(vs1, vs2)) {
-		for (unsigned int i = 0; i < vs1.vertex_count; ++i) {
+		for (Vertex i = 0; i < vs1.vertex_count; ++i) {
 			if (!(vs1.is_vertex_set(i) && vs2.is_vertex_set(i))) {
 				return false;
 			}

@@ -8,7 +8,7 @@ void print_inverse_dominator_sets(const ControlFlowGraph& cfg) {
 
 }
 
-void print_immediate_dominators(const ControlFlowGraph& cfg) {
+void print_inverse_immediate_dominator_sets(const ControlFlowGraph& cfg) {
 
 }
 
@@ -67,11 +67,11 @@ vector<VertexSet> get_inverse_dominator_sets(const ControlFlowGraph& cfg) {
 	return invdom_sets;
 }
 
-vector<VertexSet> get_immediate_dominator_sets(const ControlFlowGraph& cfg) {
+vector<VertexSet> get_inverse_immediate_dominator_sets(const ControlFlowGraph& cfg) {
 	vector<VertexSet> dom_sets = get_dominator_sets(cfg);
 	vector<VertexSet> sdom_sets = get_strict_dominatior_sets(cfg);
 	unsigned int vertex_count = cfg.get_vertex_count();
-	vector<VertexSet> idom_sets = initialize_vertex_sets(vertex_count);
+	vector<VertexSet> inv_idom_sets = initialize_vertex_sets(vertex_count);
 	for (Vertex d = 0; d < vertex_count; ++d) {
 		for (Vertex v = 0; v < vertex_count; ++v) {
 			bool is_d_sdom_v = sdom_sets[v].is_vertex_set(d);
@@ -86,20 +86,62 @@ vector<VertexSet> get_immediate_dominator_sets(const ControlFlowGraph& cfg) {
 					}
 				}
 				if (is_every_w_dom_d) {
-					idom_sets[d].set_vertex(v);
+					inv_idom_sets[d].set_vertex(v);
 				}
 			}
 		}
 	}
-	return idom_sets;
+	return inv_idom_sets;
+}
+
+vector<Vertex> get_immediate_dominators(const ControlFlowGraph& cfg) {
+	vector<VertexSet> inv_idom_sets = get_inverse_immediate_dominator_sets(cfg);
+	unsigned int vertex_count = cfg.get_vertex_count();
+	unsigned int no_vertex_value = vertex_count + 1;
+	vector<Vertex> idoms = vector<Vertex>(vertex_count, no_vertex_value);
+	for (Vertex i = 0; i < cfg.get_vertex_count(); ++i) {
+		for (Vertex j = 0; j < cfg.get_vertex_count(); ++j) {
+			if (inv_idom_sets[i].is_vertex_set(j)) {
+				idoms[j] = i;
+			}
+		}
+	}
+	return idoms;
 }
 
 Graph get_dominator_tree(const ControlFlowGraph& cfg) {
-	vector<VertexSet> idom_sets = get_immediate_dominator_sets(cfg);
+	vector<VertexSet> idom_sets = get_inverse_immediate_dominator_sets(cfg);
+	unsigned int vertex_count = cfg.get_vertex_count();
+	Graph dominator_tree = Graph(vertex_count);
+	for (Vertex i = 0; i < vertex_count; ++i) {
+		for (Vertex j = 0; j < vertex_count; ++j) {
+			if (idom_sets[i].is_vertex_set(j)) {
+				dominator_tree.insert_edge(i, j);
+			}
+		}
+	}
+	return dominator_tree;
 }
 
 vector<VertexSet> get_dominance_frontier_sets(const ControlFlowGraph& cfg) {
-
+	vector<Vertex> idoms = get_immediate_dominators(cfg);
+	unsigned int vertex_count = cfg.get_vertex_count();
+	vector<VertexSet> df_sets = initialize_vertex_sets(vertex_count);
+	for (Vertex v = 0; v < vertex_count; ++v) {
+		VertexSet prev_set = cfg.get_prev_set(v);
+		if (prev_set.count_set_vertices() >= 2) {
+			for (Vertex p = 0; p < vertex_count; ++p) {
+				if (prev_set.is_vertex_set(p)) {
+					Vertex runner = p;
+					while (runner != idoms[v]) {
+						df_sets[runner].set_vertex(v);
+						runner = idoms[runner];
+					}
+				}
+			}
+		}
+	}
+	return df_sets;
 }
 
 vector<Edge> get_back_edges(const ControlFlowGraph& cfg) {

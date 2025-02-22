@@ -19,6 +19,7 @@ public:
 	void unset_all_vertices();
 	bool is_vertex_set(Vertex query_vertex) const;
 	bool is_vertex_unset(Vertex query_vertex) const;
+	unsigned int count_set_vertices() const;
 	void print() const;
 	static VertexSet union_set(const VertexSet& vs1, const VertexSet& vs2);
 	static VertexSet intersection_set(const VertexSet& vs1, const VertexSet& vs2);
