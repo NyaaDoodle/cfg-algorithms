@@ -30,14 +30,14 @@ Vertex ControlFlowGraph::get_entry_vertex_from_input(unsigned int vertex_count) 
 		clear_cin();
 		std::cout << "Enter the entry vertex of the graph: ";
 		std::cin >> entry;
-		if (entry >= 0 && entry < vertex_count) {
+		if (entry >= 1 && entry <= vertex_count) {
 			is_input_in_range = true;
 		}
 		else {
-			std::cout << "Invalid input. Enter a vertex number from 0 to " << vertex_count << std::endl;
+			std::cout << "Invalid input. Enter a vertex number from 1 to " << vertex_count << std::endl;
 		}
 	}
-	return entry;
+	return entry - 1;
 }
 
 void ControlFlowGraph::add_edges_from_input() {
@@ -53,7 +53,7 @@ void ControlFlowGraph::add_edges_from_input() {
 			source = atoi(temp.c_str());
 			std::cin.ignore(1, ' ');
 			std::cin >> destination;
-			if (this->insert_edge(source, destination) == true) {
+			if (this->insert_edge(source - 1, destination - 1) == true) {
 				std::cout << "The edge \"" << source << ' ' << destination << "\" has been added" << std::endl;
 			}
 		}
@@ -67,7 +67,7 @@ void ControlFlowGraph::print_inverse_dominator_sets() const {
 	vector<VertexSet> invdom_sets = get_inverse_dominator_sets();
 	std::cout << "DOM^-1:" << std::endl;
 	for (Vertex i = 0; i < this->vertex_count; ++i) {
-		std::cout << "invdom(" << i << "): ";
+		std::cout << "invdom(" << (i+1) << "): ";
 		invdom_sets[i].print();
 	}
 	std::cout << std::endl;
@@ -77,7 +77,7 @@ void ControlFlowGraph::print_inverse_immediate_dominator_sets() const {
 	vector<VertexSet> inv_idom_sets = get_inverse_immediate_dominator_sets();
 	std::cout << "IDOM:" << std::endl;
 	for (Vertex i = 0; i < this->vertex_count; ++i) {
-		std::cout << "inv_idom(" << i << "): ";
+		std::cout << "inv_idom(" << (i+1) << "): ";
 		inv_idom_sets[i].print();
 	}
 	std::cout << std::endl;
@@ -94,7 +94,7 @@ void ControlFlowGraph::print_dominance_frontier_sets() const {
 	vector<VertexSet> df_sets = get_dominance_frontier_sets();
 	std::cout << "Dominance Frontier Sets:" << std::endl;
 	for (Vertex i = 0; i < this->vertex_count; ++i) {
-		std::cout << "df(" << i << "): ";
+		std::cout << "df(" << (i+1) << "): ";
 		df_sets[i].print();
 	}
 	std::cout << std::endl;
@@ -104,16 +104,18 @@ void ControlFlowGraph::print_back_edges() const {
 	vector<Edge> back_edges = get_back_edges();
 	std::cout << "Back edges:" << std::endl;
 	for (Edge back_edge : back_edges) {
-		std::cout << back_edge.source << ' ' << back_edge.destination << std::endl;
+		std::cout << (back_edge.source+1) << ' ' << (back_edge.destination+1) << std::endl;
 	}
 	std::cout << std::endl;
 }
 
 void ControlFlowGraph::print_natural_loops() const {
+	vector<Edge> back_edges = get_back_edges();
 	vector<Graph> natural_loop_subgraphs = get_natural_loops();
 	std::cout << "Natural Loop Subgraphs:" << std::endl;
 	for (unsigned int i = 0; i < natural_loop_subgraphs.size(); ++i) {
-		std::cout << "Natural Loop " << (i + 1) << std::endl;
+		std::cout << "Natural Loop " << (i + 1) << " of "
+			<< (back_edges[i].source+1) << ' ' << (back_edges[i].destination+1) << std::endl;
 		natural_loop_subgraphs[i].print();
 		std::cout << std::endl;
 	}
@@ -125,10 +127,12 @@ vector<VertexSet> ControlFlowGraph::get_dominator_sets() const {
 	do {
 		changed = false;
 		for (Vertex n = 0; n < this->vertex_count; ++n) {
-			VertexSet olddom = dom_sets[n];
-			dom_sets[n] = this->get_new_dom_set(n, dom_sets);
-			if (!VertexSet::is_vertex_sets_equal(olddom, dom_sets[n])) {
-				changed = true;
+			if (n != entry) {
+				VertexSet olddom = dom_sets[n];
+				dom_sets[n] = this->get_new_dom_set(n, dom_sets);
+				if (!VertexSet::is_vertex_sets_equal(olddom, dom_sets[n])) {
+					changed = true;
+				}
 			}
 		}
 	} while (changed == true);
@@ -292,6 +296,7 @@ Graph ControlFlowGraph::find_natural_loop(Edge back_edge) const {
 	VertexSet loop = VertexSet(this->vertex_count);
 	Vertex n = back_edge.source;
 	Vertex d = back_edge.destination;
+	loop.set_vertex(d);
 	natural_loop_insert(n, loop, vertices_stack);
 	while (!vertices_stack.empty()) {
 		Vertex m = vertices_stack.top();

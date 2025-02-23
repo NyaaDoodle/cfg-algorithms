@@ -1,5 +1,6 @@
 #include "graph.h"
 #include <iostream>
+#include <queue>
 
 #define __GRAPH_CPP_DEBUG
 
@@ -16,7 +17,7 @@ bool Graph::insert_edge(Vertex source, Vertex destination) {
 			is_edge_added = true;
 		}
 		else {
-			std::cout << "Edge \"" << source << ' ' << destination << "\" already exists in graph" << std::endl;
+			std::cout << "Edge \"" << (source + 1) << ' ' << (destination + 1) << "\" already exists in graph" << std::endl;
 		}
 	}
 	else {
@@ -53,7 +54,7 @@ Graph Graph::construct_subgraph_from_vertex_set(const VertexSet& vertices_of_sub
 void Graph::print() const {
 	for (Vertex s = 0; s < this->vertex_count; ++s) {
 		for (Vertex d : this->adjlists[s]) {
-			std::cout << s << ' ' << d << std::endl;
+			std::cout << (s+1) << ' ' << (d+1) << std::endl;
 		}
 	}
 }
@@ -65,7 +66,7 @@ bool Graph::is_vertices_in_bounds(Vertex v1, Vertex v2) const {
 	#ifdef __GRAPH_CPP_DEBUG
 	if (!result) {
 		std::cerr << "Supplied vertices out of bounds: 1: "
-			<< v1 << " 2: " << v2 << " count: " << this->vertex_count << std::endl;
+			<< (v1+1) << " 2: " << (v2+1) << " count: " << this->vertex_count << std::endl;
 	}
 	#endif
 	return result;

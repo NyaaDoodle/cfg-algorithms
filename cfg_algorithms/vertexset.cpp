@@ -59,11 +59,11 @@ unsigned int VertexSet::count_set_vertices() const {
 
 void VertexSet::print() const {
 	bool remove_space = false;
-	std::cout << "{";
+	std::cout << '{';
 	for (Vertex i = 0; i < this->vertex_count; ++i) {
 		if (this->boolarray[i] == true) {
 			remove_space = true;
-			std::cout << i << ' ';
+			std::cout << (i+1) << ' ';
 		}
 	}
 	if (remove_space == true) {
@@ -111,7 +111,9 @@ VertexSet VertexSet::intersection_set(const VertexSet& vs1, const VertexSet& vs2
 bool VertexSet::is_vertex_sets_equal(const VertexSet& vs1, const VertexSet& vs2) {
 	if (is_vertex_sets_same_length(vs1, vs2)) {
 		for (Vertex i = 0; i < vs1.vertex_count; ++i) {
-			if (!(vs1.is_vertex_set(i) && vs2.is_vertex_set(i))) {
+			bool both_set = vs1.is_vertex_set(i) && vs2.is_vertex_set(i);
+			bool both_unset = vs1.is_vertex_unset(i) && vs2.is_vertex_unset(i);
+			if (!(both_set || both_unset)) {
 				return false;
 			}
 		}
@@ -124,8 +126,8 @@ bool VertexSet::is_vertex_in_bounds(Vertex vertex) const {
 	bool result = vertex >= 0 && vertex <= this->vertex_count;
 	#ifdef __VERTEXSET_CPP_DEBUG
 	if (!result) {
-		std::cerr << "Vertex supplied is out of bounds: lower: 0 upper: "
-			<< this->vertex_count << " input : " << vertex << std::endl;
+		std::cerr << "Vertex supplied is out of bounds: lower: 1 upper: "
+			<< this->vertex_count << " input : " << (vertex+1) << std::endl;
 	}
 	#endif
 	return result;
