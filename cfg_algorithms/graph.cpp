@@ -8,10 +8,6 @@ Graph::Graph(unsigned int vertex_count) {
 	this->adjlists.resize(vertex_count);
 }
 
-unsigned int Graph::get_vertex_count() const {
-	return this->vertex_count;
-}
-
 void Graph::insert_edge(Vertex source, Vertex destination) {
 	if (is_vertices_in_bounds(source, destination)) {
 		if (!search_edge(source, destination)) {
@@ -35,20 +31,25 @@ VertexSet Graph::get_prev_set(Vertex vertex) const {
 	return prev_set;
 }
 
-void Graph::print() const {
-	for (Vertex s = 0; s < this->vertex_count; ++s) {
-		std::cout << s << " : ";
-		for (Vertex d : this->adjlists[s]) {
-			std::cout << d << ' ';
+Graph Graph::construct_subgraph_from_vertex_set(const VertexSet& vertices_of_subgraph) const {
+	// This still leaves the excluded vertices to be "lone vertices", but are not removed from the subgraph itself.
+	Graph subgraph = Graph(this->vertex_count);
+	for (Vertex i = 0; i < this->vertex_count; ++i) {
+		if (vertices_of_subgraph.is_vertex_set(i)) {
+			for (Vertex j : this->adjlists[i]) {
+				if (vertices_of_subgraph.is_vertex_set(j)) {
+					subgraph.insert_edge(i, j);
+				}
+			}
 		}
-		std::cout << std::endl;
 	}
+	return subgraph;
 }
 
-void Graph::export_print() const {
+void Graph::print() const {
 	for (Vertex s = 0; s < this->vertex_count; ++s) {
 		for (Vertex d : this->adjlists[s]) {
-			std::cout << s << " " << d << std::endl;
+			std::cout << s << ' ' << d << std::endl;
 		}
 	}
 }
