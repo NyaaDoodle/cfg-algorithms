@@ -8,17 +8,21 @@ Graph::Graph(unsigned int vertex_count) {
 	this->adjlists.resize(vertex_count);
 }
 
-void Graph::insert_edge(Vertex source, Vertex destination) {
+bool Graph::insert_edge(Vertex source, Vertex destination) {
+	bool is_edge_added = false;
 	if (is_vertices_in_bounds(source, destination)) {
 		if (!search_edge(source, destination)) {
 			adjlists[source].push_front(destination);
+			is_edge_added = true;
 		}
-		#ifdef __GRAPH_CPP_DEBUG
 		else {
-			std::cerr << "Edge " << source << ' ' << destination << "already exists in graph" << std::endl;
+			std::cout << "Edge \"" << source << ' ' << destination << "\" already exists in graph" << std::endl;
 		}
-		#endif
 	}
+	else {
+		std::cout << "Supplied vertices are out of bounds." << std::endl;
+	}
+	return is_edge_added;
 }
 
 VertexSet Graph::get_prev_set(Vertex vertex) const {

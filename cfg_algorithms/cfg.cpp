@@ -30,11 +30,11 @@ Vertex ControlFlowGraph::get_entry_vertex_from_input(unsigned int vertex_count) 
 		clear_cin();
 		std::cout << "Enter the entry vertex of the graph: ";
 		std::cin >> entry;
-		if (entry >= 0 && entry <= vertex_count) {
+		if (entry >= 0 && entry < vertex_count) {
 			is_input_in_range = true;
 		}
 		else {
-			std::cout << "Invalid input. Enter a vertex number from 0 to" << vertex_count << std::endl;
+			std::cout << "Invalid input. Enter a vertex number from 0 to " << vertex_count << std::endl;
 		}
 	}
 	return entry;
@@ -53,7 +53,9 @@ void ControlFlowGraph::add_edges_from_input() {
 			source = atoi(temp.c_str());
 			std::cin.ignore(1, ' ');
 			std::cin >> destination;
-			this->insert_edge(source, destination);
+			if (this->insert_edge(source, destination) == true) {
+				std::cout << "The edge \"" << source << ' ' << destination << "\" has been added" << std::endl;
+			}
 		}
 		else {
 			is_quit = true;

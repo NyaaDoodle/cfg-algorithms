@@ -58,13 +58,18 @@ unsigned int VertexSet::count_set_vertices() const {
 }
 
 void VertexSet::print() const {
+	bool remove_space = false;
 	std::cout << "{";
 	for (Vertex i = 0; i < this->vertex_count; ++i) {
 		if (this->boolarray[i] == true) {
+			remove_space = true;
 			std::cout << i << ' ';
 		}
 	}
-	std::cout << "\b}" << std::endl;
+	if (remove_space == true) {
+		std::cout << '\b';
+	}
+	std::cout << '}' << std::endl;
 }
 
 VertexSet VertexSet::union_set(const VertexSet& vs1, const VertexSet& vs2) {
